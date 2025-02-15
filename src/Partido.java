@@ -119,8 +119,17 @@ public class Partido implements Comparable<Partido> {
   public String toString() {
     NumberFormat brFormat = NumberFormat.getInstance(Locale.forLanguageTag("pt-BR"));
     String output = "";
-    output += this.sigla + " - " + this.numero + ", " + brFormat.format(quantidadeVotos) + " votos ";
-    output += "(" + brFormat.format(votosNominais) + " nominais" + " e " + brFormat.format(votosLegenda)
+
+    String palavraVoto = " votos ";
+    String palavraNominal = " nominais";
+
+    if (quantidadeVotos == 0)
+      palavraVoto = " voto ";
+    if (votosNominais == 0)
+      palavraNominal = " nominal";
+
+    output += this.sigla + " - " + this.numero + ", " + brFormat.format(quantidadeVotos) + palavraVoto;
+    output += "(" + brFormat.format(votosNominais) + palavraNominal + " e " + brFormat.format(votosLegenda)
         + " de legenda), ";
 
     output += this.getQuantidadeCandidatosEleitos();

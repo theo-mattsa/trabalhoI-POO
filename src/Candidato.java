@@ -74,6 +74,18 @@ public class Candidato implements Comparable<Candidato> {
     return eleito;
   }
 
+  public int getIdade(LocalDate referencia) {
+    int idade = referencia.getYear() - dataNascimento.getYear();
+
+    // Caso o aniversario ainda nao ocorreu
+    if (referencia.getMonthValue() < dataNascimento.getMonthValue() ||
+        (referencia.getMonthValue() == dataNascimento.getMonthValue()
+            && referencia.getDayOfMonth() < dataNascimento.getDayOfMonth())) {
+      idade--;
+    }
+    return idade;
+  }
+
   public void setEleito(Boolean eleito) {
     this.eleito = eleito;
   }
