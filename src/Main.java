@@ -16,6 +16,6 @@ public class Main {
         Processador processador = new Processador(arquivoCandidatos, arquivoVotacao, codigoCidade, dataEleicao);
         processador.processaCandidatosPartidos();
         processador.processaArquivoVotacao();
-        processador.imprimeVereadoresEleitos();
+        processador.imprimeRelatorios();
     }
 }

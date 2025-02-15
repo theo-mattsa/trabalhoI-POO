@@ -1,15 +1,18 @@
+import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.util.Locale;
 
 public class Candidato implements Comparable<Candidato> {
 
   private String nomeUrna;
   private String numeroCandidato;
-  private String numeroPartido;
-  private String numeroFederacao; // -1 nao participa de nenhuma
+  private Boolean participaFederacao;
   private LocalDate dataNascimento;
   private String genero;
   private Boolean eleito;
   private int quantidadeVotos;
+
+  private Partido partido;
 
   public String getGenero() {
     return genero;
@@ -35,20 +38,12 @@ public class Candidato implements Comparable<Candidato> {
     this.numeroCandidato = numeroCandidatoUrna;
   }
 
-  public String getNumeroPartido() {
-    return numeroPartido;
+  public Boolean getParticipaFederacao() {
+    return this.participaFederacao;
   }
 
-  public void setNumeroPartido(String numeroPartido) {
-    this.numeroPartido = numeroPartido;
-  }
-
-  public String getNumeroFederacao() {
-    return numeroFederacao;
-  }
-
-  public void setNumeroFederacao(String numeroFederacao) {
-    this.numeroFederacao = numeroFederacao;
+  public void setParticipaFederacao(Boolean participaFederacao) {
+    this.participaFederacao = participaFederacao;
   }
 
   public LocalDate getDataNascimento() {
@@ -57,6 +52,14 @@ public class Candidato implements Comparable<Candidato> {
 
   public void setDataNascimento(LocalDate dataNascimento) {
     this.dataNascimento = dataNascimento;
+  }
+
+  public Partido getPartido() {
+    return partido;
+  }
+
+  public void setPartido(Partido partido) {
+    this.partido = partido;
   }
 
   public int getQuantidadeVotos() {
@@ -81,6 +84,20 @@ public class Candidato implements Comparable<Candidato> {
     if (comparaVotos != 0)
       return comparaVotos;
     return this.dataNascimento.compareTo(outroCandidato.dataNascimento);
+  }
+
+  @Override
+  public String toString() {
+    NumberFormat brFormat = NumberFormat.getInstance(Locale.forLanguageTag("pt-BR"));
+    String output = "";
+    if (this.partido != null) {
+      if (this.participaFederacao)
+        output += "*";
+      output += this.nomeUrna;
+      output += " (" + this.partido.getSigla() + ", " + brFormat.format(this.quantidadeVotos) + " votos)";
+    }
+
+    return output;
   }
 
 }
