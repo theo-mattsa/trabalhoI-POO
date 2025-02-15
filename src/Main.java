@@ -11,18 +11,11 @@ public class Main {
         int codigoCidade = Integer.parseInt(args[0]);
         String arquivoCandidatos = args[1];
         String arquivoVotacao = args[2];
+        String dataEleicao = args[3];
 
-        Processador processador = new Processador(arquivoCandidatos, arquivoVotacao, codigoCidade);
-
-        // processador.processaArquivoCandidato();
-        processador.processaArquivoCandidato();
-
-        /*
-         *
-         * String arquivoCandidatos = args[1];
-         * String arquivoVotacao = args[2];
-         * String data = args[3];
-         */
-
+        Processador processador = new Processador(arquivoCandidatos, arquivoVotacao, codigoCidade, dataEleicao);
+        processador.processaCandidatosPartidos();
+        processador.processaArquivoVotacao();
+        processador.imprimeVereadoresEleitos();
     }
 }

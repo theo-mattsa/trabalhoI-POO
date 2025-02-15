@@ -1,12 +1,14 @@
-public class Candidato {
+import java.time.LocalDate;
+
+public class Candidato implements Comparable<Candidato> {
 
   private String nomeUrna;
   private String numeroCandidato;
   private String numeroPartido;
   private String numeroFederacao; // -1 nao participa de nenhuma
-  private String dataNascimento;
+  private LocalDate dataNascimento;
   private String genero;
-
+  private Boolean eleito;
   private int quantidadeVotos;
 
   public String getGenero() {
@@ -49,11 +51,11 @@ public class Candidato {
     this.numeroFederacao = numeroFederacao;
   }
 
-  public String getDataNascimento() {
+  public LocalDate getDataNascimento() {
     return dataNascimento;
   }
 
-  public void setDataNascimento(String dataNascimento) {
+  public void setDataNascimento(LocalDate dataNascimento) {
     this.dataNascimento = dataNascimento;
   }
 
@@ -61,20 +63,24 @@ public class Candidato {
     return quantidadeVotos;
   }
 
-  public void setQuantidadeVotos(int quantidadeVotos) {
-    this.quantidadeVotos = quantidadeVotos;
+  public void incrementaQuantidadeVotos(int quantidadeVotos) {
+    this.quantidadeVotos += quantidadeVotos;
+  }
+
+  public Boolean getEleito() {
+    return eleito;
+  }
+
+  public void setEleito(Boolean eleito) {
+    this.eleito = eleito;
   }
 
   @Override
-  public String toString() {
-    return "Candidato{" +
-        "nomeUrna='" + nomeUrna + '\'' +
-        ", numeroCandidato=" + numeroCandidato +
-        ", numeroPartido=" + numeroPartido +
-        ", numeroFederacao=" + numeroFederacao +
-        ", dataNascimento='" + dataNascimento + '\'' +
-        ", genero=" + genero +
-        '}';
+  public int compareTo(Candidato outroCandidato) {
+    int comparaVotos = Integer.compare(outroCandidato.quantidadeVotos, this.quantidadeVotos);
+    if (comparaVotos != 0)
+      return comparaVotos;
+    return this.dataNascimento.compareTo(outroCandidato.dataNascimento);
   }
 
 }
