@@ -8,17 +8,16 @@ public class Candidato implements Comparable<Candidato> {
   private String numeroCandidato;
   private Boolean participaFederacao;
   private LocalDate dataNascimento;
-  private String genero;
+  private Genero genero;
   private Boolean eleito;
   private int quantidadeVotos;
-
   private Partido partido;
 
-  public String getGenero() {
+  public Genero getGenero() {
     return genero;
   }
 
-  public void setGenero(String genero) {
+  public void setGenero(Genero genero) {
     this.genero = genero;
   }
 
@@ -76,8 +75,7 @@ public class Candidato implements Comparable<Candidato> {
 
   public int getIdade(LocalDate referencia) {
     int idade = referencia.getYear() - dataNascimento.getYear();
-
-    // Caso o aniversario ainda nao ocorreu
+    // Caso o aniversário ainda não tenha ocorrido
     if (referencia.getMonthValue() < dataNascimento.getMonthValue() ||
         (referencia.getMonthValue() == dataNascimento.getMonthValue()
             && referencia.getDayOfMonth() < dataNascimento.getDayOfMonth())) {
@@ -108,8 +106,6 @@ public class Candidato implements Comparable<Candidato> {
       output += this.nomeUrna;
       output += " (" + this.partido.getSigla() + ", " + brFormat.format(this.quantidadeVotos) + " votos)";
     }
-
     return output;
   }
-
 }
