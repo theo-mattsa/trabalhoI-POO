@@ -18,9 +18,9 @@ public class EleicaoRelatorios {
 
   public void imprimeRelatorios() {
     imprimeNumeroVagas();
-    imprimeVereadoresEleitos();
+    imprimeCandidatosEleitos();
     imprimeMaisVotados();
-    imprimeEleitosMajoritaria();
+    imprimeEleitosCasoMajoritaria();
     imprimeBeneficiadosSistemaProporcional();
     imprimeVotacaoPartidos();
     imprimeMaisEMenosVotadosPorPartido();
@@ -34,97 +34,124 @@ public class EleicaoRelatorios {
     System.out.println();
   }
 
-  private void imprimeVereadoresEleitos() {
+  private void imprimeCandidatosEleitos() {
     System.out.println("Vereadores eleitos:");
     int index = 1;
     for (Candidato c : listaCandidatos) {
       if (c.getEleito()) {
-        System.out.println(index + " - " + c);
+        String output = index + " - ";
+        System.out.print(output);
+        System.out.println(c);
         index++;
       }
     }
-    System.out.println();
   }
 
   private void imprimeMaisVotados() {
-    System.out.println("Candidatos mais votados (respeitando número de vagas):");
-    for (int i = 0; i < eleicao.getQuantidadeEleitos(); i++) {
-      System.out.println((i + 1) + " - " + listaCandidatos.get(i));
-    }
     System.out.println();
+    System.out.println("Candidatos mais votados (em ordem decrescente de votação e respeitando número de vagas):");
+    for (int i = 0; i < eleicao.getQuantidadeEleitos(); i++) {
+      Candidato c = listaCandidatos.get(i);
+      String output = (i + 1) + " - ";
+      System.out.println(output + c);
+    }
   }
 
-  private void imprimeEleitosMajoritaria() {
-    System.out.println("Teriam sido eleitos se fosse majoritária, mas não foram:");
-    System.out.println("(posição no ranking de mais votados)");
+  private void imprimeEleitosCasoMajoritaria() {
+    System.out.println();
+    System.out.println("Teriam sido eleitos se a votação fosse majoritária, e não foram eleitos:");
+    System.out.println("(com sua posição no ranking de mais votados)");
     for (int i = 0; i < eleicao.getQuantidadeEleitos(); i++) {
       Candidato c = listaCandidatos.get(i);
       if (!c.getEleito()) {
-        System.out.println((i + 1) + " - " + c);
+        String output = (i + 1) + " - ";
+        System.out.println(output + c);
       }
     }
-    System.out.println();
   }
 
   private void imprimeBeneficiadosSistemaProporcional() {
-    System.out.println("Eleitos que se beneficiaram do sistema proporcional:");
-    System.out.println("(posição no ranking de mais votados)");
+    System.out.println();
+    System.out.println("Eleitos, que se beneficiaram do sistema proporcional:");
+    System.out.println("(com sua posição no ranking de mais votados)");
     int index = 1;
     for (Candidato c : listaCandidatos) {
       if (c.getEleito() && listaCandidatos.indexOf(c) >= eleicao.getQuantidadeEleitos()) {
-        System.out.println(index + " - " + c);
-        index++;
+        String output = index + " - ";
+        System.out.println(output + c);
       }
+      index++;
     }
-    System.out.println();
   }
 
   private void imprimeVotacaoPartidos() {
+    System.out.println();
     System.out.println("Votação dos partidos e número de candidatos eleitos:");
     int index = 1;
     for (Partido p : listaPartidos) {
-      System.out.println(index + " - " + p);
+      String output = index + " - ";
+      System.out.println(output + p);
       index++;
     }
-    System.out.println();
   }
 
   private void imprimeMaisEMenosVotadosPorPartido() {
+
     Collections.sort(listaPartidos, Partido.comparaPorCandidatoMaisVotado());
+    System.out.println();
     System.out.println("Primeiro e último colocados de cada partido:");
     int index = 1;
     for (Partido p : listaPartidos) {
-      if (p.getQuantidadeVotos() > 0) {
-        System.out.println(index + " - " + p.getRelatorioMaisEMenosCandidatoVotado());
-        index++;
-      }
+      if (p.getQuantidadeVotos() == 0)
+        continue;
+      String output = index + " - ";
+      System.out.println(output + p.getRelatorioMaisEMenosCandidatoVotado());
+      index++;
     }
-    System.out.println();
   }
 
   private void imprimeEleitosPorFaixaEtaria() {
 
-    String[] faixas = { "<30", "30-39", "40-49", "50-59", ">=60" };
-
+    System.out.println();
     System.out.println("Eleitos, por faixa etária (na data da eleição):");
     Map<String, Integer> candidatosPorIdade = new HashMap<>();
+
     for (Candidato c : listaCandidatos) {
+
       if (!c.getEleito())
         continue;
 
-      String faixa = getFaixaEtaria(c.getIdade(eleicao.getDataEleicao()));
+      String faixa = "";
+      int idade = c.getIdade(eleicao.getDataEleicao());
+      if (idade < 30) {
+        faixa = "<30";
+      } else if (idade >= 30 && idade < 40) {
+        faixa = "30-39";
+      } else if (idade >= 40 && idade < 50) {
+        faixa = "40-49";
+      } else if (idade >= 50 && idade < 60) {
+        faixa = "50-59";
+      } else {
+        faixa = ">=60";
+      }
+      // Obter o valor atual e depois incrementar
       candidatosPorIdade.put(faixa, candidatosPorIdade.getOrDefault(faixa, 0) + 1);
     }
-
-    NumberFormat nf = NumberFormat.getPercentInstance(new Locale("pt", "BR"));
+    // Formatador de porcentagem
+    NumberFormat nf = NumberFormat.getPercentInstance(new Locale("pt", "BR")); // Usar a Locale do Brasil
     nf.setMaximumFractionDigits(2);
     nf.setMinimumFractionDigits(2);
 
-    for (String faixa : faixas) {
-      int qtd = candidatosPorIdade.getOrDefault(faixa, 0);
-      System.out.println(faixa + ": " + qtd + " (" + nf.format((double) qtd / eleicao.getQuantidadeEleitos()) + ")");
-    }
-    System.out.println();
+    System.out.println("      Idade < 30: " + candidatosPorIdade.getOrDefault("<30", 0) + " ("
+        + nf.format((double) candidatosPorIdade.getOrDefault("<30", 0) / eleicao.getQuantidadeEleitos()) + ")");
+    System.out.println("30 <= Idade < 40: " + candidatosPorIdade.getOrDefault("30-39", 0) + " ("
+        + nf.format((double) candidatosPorIdade.getOrDefault("30-39", 0) / eleicao.getQuantidadeEleitos()) + ")");
+    System.out.println("40 <= Idade < 50: " + candidatosPorIdade.getOrDefault("40-49", 0) + " ("
+        + nf.format((double) candidatosPorIdade.getOrDefault("40-49", 0) / eleicao.getQuantidadeEleitos()) + ")");
+    System.out.println("50 <= Idade < 60: " + candidatosPorIdade.getOrDefault("50-59", 0) + " ("
+        + nf.format((double) candidatosPorIdade.getOrDefault("50-59", 0) / eleicao.getQuantidadeEleitos()) + ")");
+    System.out.println("60 <= Idade     : " + candidatosPorIdade.getOrDefault(">=60", 0) + " ("
+        + nf.format((double) candidatosPorIdade.getOrDefault(">=60", 0) / eleicao.getQuantidadeEleitos()) + ")");
   }
 
   private void imprimeEleitosPorGenero() {
@@ -153,9 +180,12 @@ public class EleicaoRelatorios {
     System.out.println(
         "Masculino: " + qtdMasculino + " (" + nf.format((double) qtdMasculino / eleicao.getQuantidadeEleitos()) + ")");
     System.out.println();
+
   }
 
   private void imprimeResumoVotacao() {
+    System.out.println();
+    NumberFormat nf = NumberFormat.getPercentInstance(new Locale("pt", "BR"));
     int totalVotosValidos = 0, totalVotosNominais = 0, totalVotosLegenda = 0;
     for (Partido p : listaPartidos) {
       totalVotosValidos += p.getQuantidadeVotos();
@@ -164,27 +194,15 @@ public class EleicaoRelatorios {
     }
 
     NumberFormat brFormat = NumberFormat.getInstance(Locale.forLanguageTag("pt-BR"));
-    NumberFormat nf = NumberFormat.getPercentInstance(new Locale("pt", "BR"));
-    nf.setMaximumFractionDigits(2);
-    nf.setMinimumFractionDigits(2);
-
     System.out.println("Total de votos válidos:    " + brFormat.format(totalVotosValidos));
-    System.out.println("Total de votos nominais:   " + brFormat.format(totalVotosNominais) + " ("
-        + nf.format((double) totalVotosNominais / totalVotosValidos) + ")");
-    System.out.println("Total de votos de legenda: " + brFormat.format(totalVotosLegenda) + " ("
-        + nf.format((double) totalVotosLegenda / totalVotosValidos) + ")");
-    System.out.println();
+    System.out
+        .println("Total de votos nominais:   " + brFormat.format(totalVotosNominais) + " ("
+            + nf.format((double) totalVotosNominais / totalVotosValidos)
+            + ")");
+    System.out
+        .println("Total de votos de legenda: " + brFormat.format(totalVotosLegenda) + " ("
+            + nf.format((double) totalVotosLegenda / totalVotosValidos)
+            + ")");
   }
 
-  private String getFaixaEtaria(int idade) {
-    if (idade < 30)
-      return "<30";
-    if (idade < 40)
-      return "30-39";
-    if (idade < 50)
-      return "40-49";
-    if (idade < 60)
-      return "50-59";
-    return ">=60";
-  }
 }

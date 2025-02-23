@@ -24,8 +24,8 @@ public class Main {
         eleicao.processaCandidatosPartidos(leitorCandidatos.getLinhas(), leitorCandidatos.getIndiceCabecalho());
         eleicao.processaVotacao(leitorVotacao.getLinhas(), leitorVotacao.getIndiceCabecalho());
 
-        // Geração dos relatórios
-        EleicaoRelatorios geradorRelatorios = new EleicaoRelatorios(eleicao);
-        geradorRelatorios.imprimeRelatorios();
+        // Relatórios
+        EleicaoRelatorios relatorios = new EleicaoRelatorios(eleicao);
+        relatorios.imprimeRelatorios();
     }
 }

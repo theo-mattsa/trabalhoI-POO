@@ -1,5 +1,4 @@
 import java.text.NumberFormat;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Locale;
@@ -142,15 +141,37 @@ public class Partido implements Comparable<Partido> {
   }
 
   public String getRelatorioMaisEMenosCandidatoVotado() {
-    Collections.sort(this.candidatos);
-    Candidato maisVotado = this.candidatos.getFirst();
-    Candidato menosVotado = this.candidatos.getLast();
+
+    Candidato maisVotado = null;
+    Candidato menosVotadoComVotos = null;
+    Candidato menosVotadoGeral = null;
+
+    for (Candidato c : this.candidatos) {
+      if (maisVotado == null || c.getQuantidadeVotos() > maisVotado.getQuantidadeVotos()) {
+        maisVotado = c;
+      }
+      if (menosVotadoGeral == null || c.getQuantidadeVotos() < menosVotadoGeral.getQuantidadeVotos()) {
+        menosVotadoGeral = c;
+      }
+      if (c.getQuantidadeVotos() > 0
+          && (menosVotadoComVotos == null || c.getQuantidadeVotos() < menosVotadoComVotos.getQuantidadeVotos())) {
+        menosVotadoComVotos = c;
+      }
+    }
+
+    Candidato menosVotado = (menosVotadoComVotos != null) ? menosVotadoComVotos : menosVotadoGeral;
     NumberFormat brFormat = NumberFormat.getInstance(Locale.forLanguageTag("pt-BR"));
+    String votosMais = maisVotado.getQuantidadeVotos() == 1 ? "1 voto"
+        : brFormat.format(maisVotado.getQuantidadeVotos())
+            + (maisVotado.getQuantidadeVotos() == 0 ? " voto" : " votos");
+
+    String votosMenos = menosVotado.getQuantidadeVotos() == 1 ? "1 voto"
+        : brFormat.format(menosVotado.getQuantidadeVotos())
+            + (menosVotado.getQuantidadeVotos() == 0 ? " voto" : " votos");
+
     String output = this.sigla + " - " + this.numero + ", ";
-    output += maisVotado.getNomeUrna() + " (" + maisVotado.getNumeroCandidato() + ", "
-        + brFormat.format(maisVotado.getQuantidadeVotos()) + " votos) / ";
-    output += menosVotado.getNomeUrna() + " (" + menosVotado.getNumeroCandidato() + ", "
-        + brFormat.format(menosVotado.getQuantidadeVotos()) + " votos)";
+    output += maisVotado.getNomeUrna() + " (" + maisVotado.getNumeroCandidato() + ", " + votosMais + ") / ";
+    output += menosVotado.getNomeUrna() + " (" + menosVotado.getNumeroCandidato() + ", " + votosMenos + ")";
     return output;
   }
 
