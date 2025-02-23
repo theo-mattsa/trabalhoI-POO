@@ -14,8 +14,10 @@ public class Main {
         String dataEleicao = args[3];
 
         Eleicao eleicao = new Eleicao(arquivoCandidatos, arquivoVotacao, codigoCidade, dataEleicao);
-        eleicao.processaCandidatosPartidos();
-        eleicao.processaArquivoVotacao();
-        eleicao.imprimeRelatorios();
+        eleicao.processaCandidatos();
+        eleicao.processaVotacao();
+
+        EleicaoRelatorio relatorio = new EleicaoRelatorio(eleicao);
+        relatorio.imprimeTodosRelatorios();
     }
 }
