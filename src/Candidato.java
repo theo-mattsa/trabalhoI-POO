@@ -1,8 +1,9 @@
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.Locale;
 
-public class Candidato implements Comparable<Candidato> {
+public class Candidato {
 
   private String nomeUrna;
   private String numeroCandidato;
@@ -11,6 +12,7 @@ public class Candidato implements Comparable<Candidato> {
   private Genero genero;
   private Boolean eleito;
   private int quantidadeVotos;
+
   private Partido partido;
 
   public Genero getGenero() {
@@ -75,7 +77,8 @@ public class Candidato implements Comparable<Candidato> {
 
   public int getIdade(LocalDate referencia) {
     int idade = referencia.getYear() - dataNascimento.getYear();
-    // Caso o aniversário ainda não tenha ocorrido
+
+    // Caso o aniversario ainda nao ocorreu
     if (referencia.getMonthValue() < dataNascimento.getMonthValue() ||
         (referencia.getMonthValue() == dataNascimento.getMonthValue()
             && referencia.getDayOfMonth() < dataNascimento.getDayOfMonth())) {
@@ -88,12 +91,47 @@ public class Candidato implements Comparable<Candidato> {
     this.eleito = eleito;
   }
 
-  @Override
-  public int compareTo(Candidato outroCandidato) {
-    int comparaVotos = Integer.compare(outroCandidato.quantidadeVotos, this.quantidadeVotos);
-    if (comparaVotos != 0)
-      return comparaVotos;
-    return this.dataNascimento.compareTo(outroCandidato.dataNascimento);
+  /**
+   * @Override
+   *           public int compareTo(Candidato outroCandidato) {
+   *           int comparaVotos = Integer.compare(outroCandidato.quantidadeVotos,
+   *           this.quantidadeVotos);
+   *           if (comparaVotos != 0)
+   *           return comparaVotos;
+   *           return
+   *           this.dataNascimento.compareTo(outroCandidato.dataNascimento);
+   *           }
+   */
+
+  public static class CandidatoComparator implements Comparator<Candidato> {
+
+    private final boolean compararNumeroPartido;
+
+    public CandidatoComparator(boolean compararNumeroPartido) {
+      this.compararNumeroPartido = compararNumeroPartido;
+    }
+
+    @Override
+    public int compare(Candidato c1, Candidato c2) {
+      // Comparar votos de forma decrescente
+      int comparaVotos = Integer.compare(c2.getQuantidadeVotos(), c1.getQuantidadeVotos());
+      if (comparaVotos != 0) {
+        return comparaVotos;
+      }
+
+      // Caso de empate no número de votos, comparar pelo número partidário (se
+      // habilitado)
+      if (compararNumeroPartido) {
+        int comparaNumeroPartidario = c1.getPartido().getNumero().compareTo(c2.getPartido().getNumero());
+        if (comparaNumeroPartidario != 0) {
+          return comparaNumeroPartidario;
+        }
+      }
+
+      // Caso de empate em votos (e número partidário se considerado), comparar pela
+      // data de nascimento
+      return c1.getDataNascimento().compareTo(c2.getDataNascimento());
+    }
   }
 
   @Override
@@ -106,6 +144,8 @@ public class Candidato implements Comparable<Candidato> {
       output += this.nomeUrna;
       output += " (" + this.partido.getSigla() + ", " + brFormat.format(this.quantidadeVotos) + " votos)";
     }
+
     return output;
   }
+
 }

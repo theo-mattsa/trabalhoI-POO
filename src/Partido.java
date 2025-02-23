@@ -1,6 +1,8 @@
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 public class Partido implements Comparable<Partido> {
@@ -12,14 +14,14 @@ public class Partido implements Comparable<Partido> {
   private int votosLegenda;
   private int quantidadeVotos;
 
-  private LinkedList<Candidato> candidatos = new LinkedList<>();
+  private List<Candidato> candidatos = new ArrayList<>();
 
-  public void setCandidatos(LinkedList<Candidato> candidatos) {
+  public void setCandidatos(List<Candidato> candidatos) {
     this.candidatos = candidatos;
   }
 
-  public LinkedList<Candidato> getCandidatos() {
-    return new LinkedList<>(this.candidatos);
+  public List<Candidato> getCandidatos() {
+    return new ArrayList<>(this.candidatos);
   }
 
   public void insereCandidato(Candidato c) {
@@ -142,37 +144,33 @@ public class Partido implements Comparable<Partido> {
 
   public String getRelatorioMaisEMenosCandidatoVotado() {
 
-    Candidato maisVotado = null;
-    Candidato menosVotadoComVotos = null;
-    Candidato menosVotadoGeral = null;
-
-    for (Candidato c : this.candidatos) {
-      if (maisVotado == null || c.getQuantidadeVotos() > maisVotado.getQuantidadeVotos()) {
-        maisVotado = c;
-      }
-      if (menosVotadoGeral == null || c.getQuantidadeVotos() < menosVotadoGeral.getQuantidadeVotos()) {
-        menosVotadoGeral = c;
-      }
-      if (c.getQuantidadeVotos() > 0
-          && (menosVotadoComVotos == null || c.getQuantidadeVotos() < menosVotadoComVotos.getQuantidadeVotos())) {
-        menosVotadoComVotos = c;
-      }
+    // Mensagem de depuracao
+    if (this.candidatos.isEmpty()) {
+      return String.format("%s - %s, Nenhum candidato registrado", this.sigla, this.numero);
     }
 
-    Candidato menosVotado = (menosVotadoComVotos != null) ? menosVotadoComVotos : menosVotadoGeral;
+    Collections.sort(this.candidatos, new Candidato.CandidatoComparator(true));
+
+    Candidato maisVotado = this.candidatos.get(0);
+    Candidato menosVotado = this.candidatos.get(this.candidatos.size() - 1);
+
+    String palavraVoto1 = maisVotado.getQuantidadeVotos() <= 1 ? "voto" : "votos";
+    String palavraVoto2 = menosVotado.getQuantidadeVotos() <= 1 ? "voto" : "votos";
+
     NumberFormat brFormat = NumberFormat.getInstance(Locale.forLanguageTag("pt-BR"));
-    String votosMais = maisVotado.getQuantidadeVotos() == 1 ? "1 voto"
-        : brFormat.format(maisVotado.getQuantidadeVotos())
-            + (maisVotado.getQuantidadeVotos() == 0 ? " voto" : " votos");
 
-    String votosMenos = menosVotado.getQuantidadeVotos() == 1 ? "1 voto"
-        : brFormat.format(menosVotado.getQuantidadeVotos())
-            + (menosVotado.getQuantidadeVotos() == 0 ? " voto" : " votos");
-
-    String output = this.sigla + " - " + this.numero + ", ";
-    output += maisVotado.getNomeUrna() + " (" + maisVotado.getNumeroCandidato() + ", " + votosMais + ") / ";
-    output += menosVotado.getNomeUrna() + " (" + menosVotado.getNumeroCandidato() + ", " + votosMenos + ")";
-    return output;
+    return String.format(
+        "%s - %s, %s (%s, %s %s) / %s (%s, %s %s)",
+        this.sigla,
+        this.numero,
+        maisVotado.getNomeUrna(),
+        maisVotado.getNumeroCandidato(),
+        brFormat.format(maisVotado.getQuantidadeVotos()),
+        palavraVoto1,
+        menosVotado.getNomeUrna(),
+        menosVotado.getNumeroCandidato(),
+        brFormat.format(menosVotado.getQuantidadeVotos()),
+        palavraVoto2);
   }
 
 }
