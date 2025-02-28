@@ -13,7 +13,7 @@ public class Eleicao {
   private String pathArquivoVotacao;
 
   // Data da eleicao
-  LocalDate dataEleicao;
+  private LocalDate dataEleicao;
 
   private int codigoCidade;
   private int quantidadeEleitos;

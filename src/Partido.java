@@ -9,10 +9,10 @@ public class Partido implements Comparable<Partido> {
 
   private String sigla;
   private String numero;
-
   private int votosNominais;
   private int votosLegenda;
   private int quantidadeVotos;
+  private int quantidadeCandidatosEleitos;
 
   private List<Candidato> candidatos = new ArrayList<>();
 
@@ -26,6 +26,9 @@ public class Partido implements Comparable<Partido> {
 
   public void insereCandidato(Candidato c) {
     this.candidatos.add(c);
+    if (c.getEleito()) {
+      this.quantidadeCandidatosEleitos++;
+    }
   }
 
   public Partido(String numero, String sigla) {
@@ -54,12 +57,7 @@ public class Partido implements Comparable<Partido> {
   }
 
   public int getQuantidadeCandidatosEleitos() {
-    int count = 0;
-    for (Candidato c : this.candidatos) {
-      if (c.getEleito())
-        count++;
-    }
-    return count;
+    return this.quantidadeCandidatosEleitos;
   }
 
   public static Comparator<Partido> comparaPorCandidatoMaisVotado() {

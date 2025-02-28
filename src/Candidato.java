@@ -7,10 +7,10 @@ public class Candidato {
 
   private String nomeUrna;
   private String numeroCandidato;
-  private Boolean participaFederacao;
+  private boolean participaFederacao;
   private LocalDate dataNascimento;
   private Genero genero;
-  private Boolean eleito;
+  private boolean eleito;
   private int quantidadeVotos;
 
   private Partido partido;
