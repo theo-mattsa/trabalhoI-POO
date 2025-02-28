@@ -25,11 +25,11 @@ public class Eleicao {
   private Map<String, Candidato> candidatos = new HashMap<>();
 
   public Map<String, Candidato> getCandidatos() {
-    return candidatos;
+    return new HashMap<>(candidatos);
   }
 
   public Map<String, Partido> getPartidos() {
-    return partidos;
+    return new HashMap<>(partidos);
   }
 
   public int getQuantidadeEleitos() {
