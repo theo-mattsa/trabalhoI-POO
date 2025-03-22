@@ -5,6 +5,8 @@
 #include <iostream>
 #include <string>
 
+#include "partido.hpp"
+
 enum class Genero {
   MASCULINO,
   FEMININO,
@@ -55,7 +57,7 @@ class Candidato {
   void setPartido(Partido& partido);
   Partido* getPartido() const;
 
-  int comparaCandidatos(const Candidato& c1, const Candidato& c2, const bool& compararPorNumeroPartido) const;
+  bool compare(const Candidato& c2, const bool& compararPorNumeroPartido) const;
 };
 
 #endif  // CANDIDATO_HPP

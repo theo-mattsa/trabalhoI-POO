@@ -28,6 +28,10 @@ class Eleicao {
   ~Eleicao();
   void processaCandidatos();
   void processaVotacao();
+  const std::map<std::string, Partido*>& getPartidos() const;
+  const std::map<std::string, Candidato*>& getCandidatos() const;
+  int getQuantidadeEleitos() const;
+  tm getDataEleicao() const;
 };
 
 #endif  // ELEICAO_HPP

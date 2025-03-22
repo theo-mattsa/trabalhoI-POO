@@ -50,48 +50,51 @@ int Partido::getQtdCandidatosEleitos() const {
 
 void Partido::insereCandidato(const Candidato& candidato) {
   this->candidatos.push_back(const_cast<Candidato*>(&candidato));
+  if (candidato.getEleito())
+    this->qtdCandidatosEleitos++;
 }
 
 const vector<Candidato*>& Partido::getCandidatos() const {
   return this->candidatos;
 }
 
-int Partido::comparaPartidos(const Partido& p1, const Partido& p2) const {
-  if (p1.getQtdVotos() > p2.getQtdVotos())
-    return 1;
-  if (p1.getQtdVotos() < p2.getQtdVotos())
-    return -1;
-  return 0;
-}
-
-int Partido::comparaPartidosPorCandidatosMaisVotados(const Partido& p1, const Partido& p2) const {
+bool Partido::comparaPartidosPorCandidatosMaisVotados(const Partido& p2) const {
   int votosC1 = 0;
   int votosC2 = 0;
 
-  // Encontra a quantidade de votos do candidato mais votado do partido atual
+  // Encontra a quantidade de votos do candidato mais votado do partido 1
   for (const auto& candidato : this->getCandidatos()) {
     if (candidato->getQuantidadeVotos() > votosC1) {
       votosC1 = candidato->getQuantidadeVotos();
     }
   }
 
-  // Encontra a qtd de votos do candidato mais votado do partido 2
-  for (auto candidato : p2.getCandidatos()) {
-    if (candidato->getQuantidadeVotos() > votosC2)
+  // Encontra a quantidade de votos do candidato mais votado do partido 2
+  for (const auto& candidato : p2.getCandidatos()) {
+    if (candidato->getQuantidadeVotos() > votosC2) {
       votosC2 = candidato->getQuantidadeVotos();
+    }
   }
 
-  if (votosC1 > votosC2)
-    return 1;
-  if (votosC1 < votosC2)
-    return -1;
-  return 0;
+  // Comparar votos dos candidatos mais votados
+  return votosC1 > votosC2;  // Retorna true se p1 tem mais votos, false caso contrário
+}
+
+bool Partido::compare(const Partido& p2) const {
+  // Comparar votos de forma crescente
+  int comparaVotos = this->getQtdVotos() - p2.getQtdVotos();
+  if (comparaVotos != 0)
+    return comparaVotos > 0;
+
+  return this->getNumero().compare(p2.getNumero()) > 0;
 }
 
 void Partido::incrementaVotosNominais(const int& votos) {
   this->votosNominais += votos;
+  this->qtdVotos += votos;
 }
 
 void Partido::incrementaVotosLegenda(const int& votos) {
   this->votosLegenda += votos;
+  this->qtdVotos += votos;
 }

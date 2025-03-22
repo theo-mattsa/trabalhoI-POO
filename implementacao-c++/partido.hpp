@@ -9,6 +9,8 @@
 
 using namespace std;
 
+class Candidato;
+
 class Partido {
  private:
   string sigla;
@@ -17,7 +19,6 @@ class Partido {
   int votosLegenda = 0;
   int qtdVotos = 0;
   int qtdCandidatosEleitos = 0;
-
   // Armazena os candidatos como ponteiros (e inicializa como vetor vazio)
   vector<Candidato*> candidatos = {};
 
@@ -42,17 +43,16 @@ class Partido {
 
   void insereCandidato(const Candidato& candidato);
 
+  // Retorna uma referencia constante para o vetor de candidatos
   const vector<Candidato*>& getCandidatos() const;
-
-  // Callback de comparacao de partidos
-  int comparaPartidos(const Partido& p1, const Partido& p2) const;
-
-  // Compara partidos por candidaatos mais votados
-  int comparaPartidosPorCandidatosMaisVotados(const Partido& p1, const Partido& p2) const;
 
   void incrementaVotosNominais(const int& votos);
 
   void incrementaVotosLegenda(const int& votos);
+
+  bool comparaPartidosPorCandidatosMaisVotados(const Partido& p2) const;
+
+  bool compare(const Partido& p2) const;
 };
 
 #endif  // PARTIDO_HPP

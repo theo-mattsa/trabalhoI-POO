@@ -164,6 +164,22 @@ void Eleicao::processaVotacao() {
   arquivo.close();
 }
 
+const map<string, Partido*>& Eleicao::getPartidos() const {
+  return this->partidos;
+}
+
+const map<string, Candidato*>& Eleicao::getCandidatos() const {
+  return this->candidatos;
+}
+
+int Eleicao::getQuantidadeEleitos() const {
+  return this->quantidadeEleitos;
+}
+
+tm Eleicao::getDataEleicao() const {
+  return this->dataEleicao;
+}
+
 // Libera memoria alocada para os partidos e candidatos
 Eleicao::~Eleicao() {
   for (auto& [_, partido] : this->partidos)

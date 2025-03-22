@@ -1,6 +1,7 @@
 #if !defined(ELEICAORELATORIO_HPP)
 #define ELEICAORELATORIO_HPP
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -19,6 +20,14 @@ class EleicaoRelatorio {
   EleicaoRelatorio(Eleicao& eleicao);
   void imprimeTodosRelatorios();
   void imprimeNumeroVagas();
+  void imprimeCandidatosEleitos();
+  void imprimeCandidatosMaisVotados();
+  void imprimeCandidatosEleitosCasoMajoritario();
+  void imprimeCandidatosEleitosCasoProporcional();
+  void imprimeVotacaoPartidos();
+  void imprimePrimeiroUltimoPartido();
+  void eleitosFaixaEtaria();
+  void imprimeRelatorioGenero();
 };
 
 #endif  // ELEICAORELATORIO_HPP

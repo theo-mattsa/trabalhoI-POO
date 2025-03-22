@@ -1,8 +1,7 @@
 #include <iostream>
 
-#include "candidato.hpp"
+#include "eleicao-relatorio.hpp"
 #include "eleicao.hpp"
-#include "partido.hpp"
 
 using namespace std;
 
@@ -21,6 +20,9 @@ int main(int argc, char const* argv[]) {
   Eleicao eleicao(codigoCidade, arquivoCandidatos, arquivoVotacao, dataEleicao);
   eleicao.processaCandidatos();
   eleicao.processaVotacao();
+
+  EleicaoRelatorio relatorio(eleicao);
+  relatorio.imprimePrimeiroUltimoPartido();
 
   return 0;
 }
