@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int main(int argc, char const *argv[]) {
+int main(int argc, char const* argv[]) {
   // Verifica se o numero de argumentos esta correto
   if (argc != 5) {
     cout << "Use o formato: ./vereadores <codigo_cidade> <arquivo_candidatos> <arquivo_votacao> <data>" << std::endl;

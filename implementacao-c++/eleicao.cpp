@@ -50,20 +50,20 @@ void Eleicao::processaCandidatos() {
     string numeroPartido = valores[indiceCabecalhos["NR_PARTIDO"]];
     string nomePartido = valores[indiceCabecalhos["SG_PARTIDO"]];
 
-    Partido p;
+    Partido* p = nullptr;
+
     // Verifica se o partido ja foi inserido no map
     if (this->partidos.find(numeroPartido) == this->partidos.end()) {
-      p.setNumero(numeroPartido);
-      p.setSigla(nomePartido);
+      p = new Partido;
+      p->setNumero(numeroPartido);
+      p->setSigla(nomePartido);
       this->partidos[numeroPartido] = p;
     } else {
       p = this->partidos[numeroPartido];
     }
 
     int codigoCidadeArquivo = stoi(valores[indiceCabecalhos["SG_UE"]]);
-
     int codigoCargo = stoi(valores[indiceCabecalhos["CD_CARGO"]]);
-
     if (codigoCidadeArquivo != this->codigoCidade || codigoCargo != 13)
       continue;
 
@@ -83,22 +83,23 @@ void Eleicao::processaCandidatos() {
       this->quantidadeEleitos++;
     }
 
-    Candidato candidato;
-    candidato.setEleito(candidatoEleito);
-    candidato.setNumeroCandidato(numeroCandidato);
-    candidato.setNomeUrna(nomeCandidatoUrna);
-    candidato.setPartido(p);
-    candidato.setParticipaFederacao(numFederacao != -1);
-    candidato.setDataNascimento(dataNascimento);
+    Candidato* candidato = new Candidato;
+
+    candidato->setEleito(candidatoEleito);
+    candidato->setNumeroCandidato(numeroCandidato);
+    candidato->setNomeUrna(nomeCandidatoUrna);
+    candidato->setPartido(*p);
+    candidato->setParticipaFederacao(numFederacao != -1);
+    candidato->setDataNascimento(dataNascimento);
 
     if (genero == 2) {
-      candidato.setGenero(Genero::MASCULINO);
+      candidato->setGenero(Genero::MASCULINO);
     } else if (genero == 4) {
-      candidato.setGenero(Genero::FEMININO);
+      candidato->setGenero(Genero::FEMININO);
     }
 
     this->candidatos[numeroCandidato] = candidato;
-    p.insereCandidato(candidato);
+    p->insereCandidato(*candidato);
   }
 
   arquivo.close();
@@ -146,19 +147,27 @@ void Eleicao::processaVotacao() {
     if (numCandidato >= 10000 && numCandidato <= 99999) {
       string numeroCandidato = to_string(numCandidato);
       if (this->candidatos.find(numeroCandidato) != this->candidatos.end()) {
-        Candidato candidato = this->candidatos[numeroCandidato];
-        candidato.incrementaVotos(qtdVotos);
-        Partido* p = candidato.getPartido();
+        Candidato* candidato = this->candidatos[numeroCandidato];
+        candidato->incrementaVotos(qtdVotos);
+        Partido* p = candidato->getPartido();
         p->incrementaVotosNominais(qtdVotos);
       }
     } else if (numCandidato >= 10 && numCandidato <= 99 && !(numCandidato >= 95 && numCandidato <= 98)) {
       // Nao eh candidato, eh partido
       if (this->partidos.find(to_string(numCandidato)) != this->partidos.end()) {
-        Partido p = this->partidos[to_string(numCandidato)];
-        p.incrementaVotosLegenda(qtdVotos);
+        Partido* p = this->partidos[to_string(numCandidato)];
+        p->incrementaVotosLegenda(qtdVotos);
       }
     }
   }
 
   arquivo.close();
+}
+
+// Libera memoria alocada para os partidos e candidatos
+Eleicao::~Eleicao() {
+  for (auto& [_, partido] : this->partidos)
+    delete partido;
+  for (auto& [_, candidato] : this->candidatos)
+    delete candidato;
 }

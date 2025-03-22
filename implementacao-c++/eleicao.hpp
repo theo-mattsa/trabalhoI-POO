@@ -19,12 +19,13 @@ class Eleicao {
   string arquivoVotacao;
   tm dataEleicao = {};
   // (Numero do partido, Partido)
-  map<string, Partido> partidos = {};
+  map<string, Partido*> partidos = {};
   // (Numero do candidato, Candidato)
-  map<string, Candidato> candidatos = {};
+  map<string, Candidato*> candidatos = {};
 
  public:
   Eleicao(int codigoCidade, const string& arquivoCandidatos, const string& arquivoVotacao, const string& dataEleicao);
+  ~Eleicao();
   void processaCandidatos();
   void processaVotacao();
 };
