@@ -86,7 +86,7 @@ bool Partido::compare(const Partido& p2) const {
   if (comparaVotos != 0)
     return comparaVotos > 0;
 
-  return this->getNumero().compare(p2.getNumero()) > 0;
+  return this->getNumero().compare(p2.getNumero()) < 0;
 }
 
 void Partido::incrementaVotosNominais(const int& votos) {

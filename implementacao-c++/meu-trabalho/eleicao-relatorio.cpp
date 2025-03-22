@@ -106,15 +106,14 @@ void EleicaoRelatorio::imprimeCandidatosEleitosCasoProporcional() {
   cout << endl;
   cout << "Eleitos, que se beneficiaram do sistema proporcional:" << endl;
   cout << "(com sua posição no ranking de mais votados)" << endl;
-  int index = 1;
-  for (size_t i = 0; i < listaCandidatos.size(); ++i) {
+
+  // Candidatos que foram eleitos e não estariam se fosse majoritário
+  for (size_t i = 0; i < listaCandidatos.size(); i++) {
     Candidato& c = listaCandidatos[i];
-    // Verifica se o candidato foi eleito e se está além da quantidade de eleitos
-    if (c.getEleito() && index >= eleicao.getQuantidadeEleitos()) {
-      cout << index << " - ";
+    if (c.getEleito() && (int)i >= eleicao.getQuantidadeEleitos()) {
+      cout << i + 1 << " - ";
       imprimeCandidato(c);
     }
-    index++;
   }
 }
 
