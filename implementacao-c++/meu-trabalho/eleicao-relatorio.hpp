@@ -28,6 +28,7 @@ class EleicaoRelatorio {
   void imprimePrimeiroUltimoPartido();
   void eleitosFaixaEtaria();
   void imprimeRelatorioGenero();
+  void imprimeRelatorioGeral();
 };
 
 #endif  // ELEICAORELATORIO_HPP

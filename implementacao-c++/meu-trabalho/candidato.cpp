@@ -63,8 +63,10 @@ void Candidato::incrementaVotos(const int& votos) {
 }
 
 int Candidato::getIdade(const tm& dataReferencia) const {
-  int idade = dataReferencia.tm_year - this->dataNascimento.tm_year;
-  if (dataReferencia.tm_mon < this->dataNascimento.tm_mon || dataReferencia.tm_mday < this->dataNascimento.tm_mday)
+  int idade = dataReferencia.tm_year - this->getDataNascimento().tm_year;
+  if (dataReferencia.tm_mon < this->getDataNascimento().tm_mon ||
+      (dataReferencia.tm_mon == this->getDataNascimento().tm_mon &&
+       dataReferencia.tm_mday < this->getDataNascimento().tm_mday))
     idade--;
   return idade;
 }
@@ -92,8 +94,8 @@ bool Candidato::compare(const Candidato& c2, const bool& compararPorNumeroPartid
 
   // Caso empate, comparar pela data de nascimento
   if (this->getDataNascimento().tm_year != c2.getDataNascimento().tm_year)
-    return this->getDataNascimento().tm_year > c2.getDataNascimento().tm_year;  // Comparar anos de nascimento
+    return this->getDataNascimento().tm_year < c2.getDataNascimento().tm_year;  // Comparar anos de nascimento
   if (this->getDataNascimento().tm_mon != c2.getDataNascimento().tm_mon)
-    return this->getDataNascimento().tm_mon > c2.getDataNascimento().tm_mon;  // Comparar meses de nascimento
-  return this->getDataNascimento().tm_mday > c2.getDataNascimento().tm_mday;  // Comparar dias de nascimento
+    return this->getDataNascimento().tm_mon < c2.getDataNascimento().tm_mon;  // Comparar meses de nascimento
+  return this->getDataNascimento().tm_mday < c2.getDataNascimento().tm_mday;  // Comparar dias de nascimento
 }

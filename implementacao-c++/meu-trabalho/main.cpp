@@ -22,7 +22,7 @@ int main(int argc, char const* argv[]) {
   eleicao.processaVotacao();
 
   EleicaoRelatorio relatorio(eleicao);
-  relatorio.imprimePrimeiroUltimoPartido();
+  relatorio.imprimeTodosRelatorios();
 
   return 0;
 }
