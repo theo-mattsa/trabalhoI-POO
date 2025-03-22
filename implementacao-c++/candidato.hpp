@@ -11,9 +11,9 @@ enum class Genero {
   OUTRO
 };
 
-// Forward-declaration
 using namespace std;
 
+// Forward-declaration
 class Partido;
 
 class Candidato {
@@ -21,11 +21,11 @@ class Candidato {
   string nomeUrna;
   string numeroCandidato;
   bool participaFederacao;
-  tm dataNascimento;
+  tm dataNascimento = {};
   Genero genero;
-  bool eleito;
-  int quantidadeVotos;
-  Partido* partido;
+  bool eleito = 0;
+  int quantidadeVotos = 0;
+  Partido* partido = nullptr;
 
  public:
   void setNomeUrna(const string& nome);
@@ -37,7 +37,7 @@ class Candidato {
   void setParticipaFederacao(const bool& participa);
   bool getParticipaFederacao() const;
 
-  void setDataNascimento(const tm& data);
+  void setDataNascimento(const string& dataNascimento);
   tm getDataNascimento() const;
 
   void setGenero(const Genero& genero);
@@ -48,6 +48,7 @@ class Candidato {
 
   void setQuantidadeVotos(const int& votos);
   int getQuantidadeVotos() const;
+  void incrementaVotos(const int& votos);
 
   int getIdade(const tm& referenceDate) const;
 

@@ -13,13 +13,13 @@ class Partido {
  private:
   string sigla;
   string numero;
-  int votosNominais;
-  int votosLegenda;
-  int qtdVotos;
-  int qtdCandidatosEleitos;
+  int votosNominais = 0;
+  int votosLegenda = 0;
+  int qtdVotos = 0;
+  int qtdCandidatosEleitos = 0;
 
-  // Armazena os candidatos como ponteiros
-  vector<Candidato*> candidatos;
+  // Armazena os candidatos como ponteiros (e inicializa como vetor vazio)
+  vector<Candidato*> candidatos = {};
 
  public:
   void setSigla(const string& sigla);
@@ -40,7 +40,7 @@ class Partido {
   void setQtdCandidatosEleitos(const int& eleitos);
   int getQtdCandidatosEleitos() const;
 
-  void addCandidato(const Candidato& candidato);
+  void insereCandidato(const Candidato& candidato);
 
   const vector<Candidato*>& getCandidatos() const;
 

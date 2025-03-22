@@ -1,4 +1,9 @@
 #include <iostream>
+
+#include "candidato.hpp"
+#include "eleicao.hpp"
+#include "partido.hpp"
+
 using namespace std;
 
 int main(int argc, char const *argv[]) {
@@ -8,15 +13,14 @@ int main(int argc, char const *argv[]) {
     return 1;
   }
 
-  int codigoCidade = atoi(argv[1]);
+  int codigoCidade = stoi(argv[1]);
   string arquivoCandidatos = argv[2];
   string arquivoVotacao = argv[3];
   string dataEleicao = argv[4];
 
-  cout << "Codigo da Cidade: " << codigoCidade << endl;
-  cout << "Arquivo Candidatos: " << arquivoCandidatos << endl;
-  cout << "Arquivo Votacao: " << arquivoVotacao << endl;
-  cout << "Data da Eleição: " << dataEleicao << endl;
+  Eleicao eleicao(codigoCidade, arquivoCandidatos, arquivoVotacao, dataEleicao);
+  eleicao.processaCandidatos();
+  eleicao.processaVotacao();
 
   return 0;
 }

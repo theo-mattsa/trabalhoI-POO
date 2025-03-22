@@ -24,7 +24,9 @@ bool Candidato::getParticipaFederacao() const {
   return this->participaFederacao;
 }
 
-void Candidato::setDataNascimento(const tm& data) {
+void Candidato::setDataNascimento(const string& dataNascimento) {
+  tm data;
+  strptime(dataNascimento.c_str(), "%d/%m/%Y", &data);
   this->dataNascimento = data;
 }
 
@@ -54,6 +56,10 @@ void Candidato::setQuantidadeVotos(const int& votos) {
 
 int Candidato::getQuantidadeVotos() const {
   return this->quantidadeVotos;
+}
+
+void Candidato::incrementaVotos(const int& votos) {
+  this->quantidadeVotos += votos;
 }
 
 int Candidato::getIdade(const tm& dataReferencia) const {

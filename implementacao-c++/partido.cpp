@@ -48,8 +48,7 @@ int Partido::getQtdCandidatosEleitos() const {
   return this->qtdCandidatosEleitos;
 }
 
-// Trabalhar com ponteiros???
-void Partido::addCandidato(const Candidato& candidato) {
+void Partido::insereCandidato(const Candidato& candidato) {
   this->candidatos.push_back(const_cast<Candidato*>(&candidato));
 }
 
