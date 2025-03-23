@@ -23,5 +23,9 @@ int main(int argc, char const* argv[]) {
   eleicao.processaCandidatos();
   eleicao.processaVotacao();
 
+  // Cria relatorio e imprime
+  EleicaoRelatorio relatorio(eleicao);
+  relatorio.imprimeTodosRelatorios();
+
   return 0;
 }
