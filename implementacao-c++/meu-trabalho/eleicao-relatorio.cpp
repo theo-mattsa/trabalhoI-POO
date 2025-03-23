@@ -5,17 +5,17 @@
 EleicaoRelatorio::EleicaoRelatorio(Eleicao& eleicao) : eleicao(eleicao) {
   // Cria um vetor de partidos e candidatos a partir do map de partidos
   for (auto& par : eleicao.getPartidos())
-    this->listaPartidos.push_back(*par.second);
+    this->listaPartidos.push_back(par.second);
   for (auto& par : eleicao.getCandidatos())
-    this->listaCandidatos.push_back(*par.second);
+    this->listaCandidatos.push_back(par.second);
 
   // Faz sort de candidatos e partidos das novas listas
-  sort(this->listaCandidatos.begin(), this->listaCandidatos.end(), [](const Candidato& c1, const Candidato& c2) {
-    return c1.compare(c2, false);
+  sort(this->listaCandidatos.begin(), this->listaCandidatos.end(), [](Candidato* c1, Candidato* c2) {
+    return c1->compare(*c2, false);
   });
 
-  sort(this->listaPartidos.begin(), this->listaPartidos.end(), [](const Partido& p1, const Partido& p2) {
-    return p1.compare(p2);
+  sort(this->listaPartidos.begin(), this->listaPartidos.end(), [](Partido* p1, Partido* p2) {
+    return p1->compare(*p2);
   });
 
   // Configuracao do locale para formatacao dos valores
@@ -72,9 +72,9 @@ void EleicaoRelatorio::imprimeNumeroVagas() {
 void EleicaoRelatorio::imprimeCandidatosEleitos() {
   int index = 1;
   for (auto& candidato : this->listaCandidatos) {
-    if (candidato.getEleito()) {
+    if (candidato->getEleito()) {
       cout << index << " - ";
-      imprimeCandidato(candidato);
+      imprimeCandidato(*candidato);
       index++;
     }
   }
@@ -85,7 +85,7 @@ void EleicaoRelatorio::imprimeCandidatosMaisVotados() {
   cout << "Candidatos mais votados (em ordem decrescente de votação e respeitando número de vagas):" << endl;
   for (int i = 0; i < eleicao.getQuantidadeEleitos(); i++) {
     cout << i + 1 << " - ";
-    imprimeCandidato(this->listaCandidatos[i]);
+    imprimeCandidato(*(this->listaCandidatos[i]));
   }
 }
 
@@ -94,9 +94,9 @@ void EleicaoRelatorio::imprimeCandidatosEleitosCasoMajoritario() {
   cout << "Teriam sido eleitos se a votação fosse majoritária, e não foram eleitos:" << endl;
   cout << "(com sua posição no ranking de mais votados)" << endl;
   for (int i = 0; i < eleicao.getQuantidadeEleitos(); i++) {
-    if (!this->listaCandidatos[i].getEleito()) {
+    if (!this->listaCandidatos[i]->getEleito()) {
       cout << i + 1 << " - ";
-      imprimeCandidato(this->listaCandidatos[i]);
+      imprimeCandidato(*(this->listaCandidatos[i]));
     }
   }
 }
@@ -108,7 +108,7 @@ void EleicaoRelatorio::imprimeCandidatosEleitosCasoProporcional() {
 
   // Candidatos que foram eleitos e não estariam se fosse majoritário
   for (size_t i = 0; i < listaCandidatos.size(); i++) {
-    Candidato& c = listaCandidatos[i];
+    Candidato& c = *listaCandidatos[i];
     if (c.getEleito() && (int)i >= eleicao.getQuantidadeEleitos()) {
       cout << i + 1 << " - ";
       imprimeCandidato(c);
@@ -122,7 +122,7 @@ void EleicaoRelatorio::imprimeVotacaoPartidos() {
   int index = 1;
   for (auto& partido : this->listaPartidos) {
     cout << index << " - ";
-    imprimePartido(partido);
+    imprimePartido(*partido);
     index++;
   }
 }
@@ -130,31 +130,31 @@ void EleicaoRelatorio::imprimeVotacaoPartidos() {
 void EleicaoRelatorio::imprimePrimeiroUltimoPartido() {
   // Realiza reordenação especial para imprimir o primeiro e o último mais votado de cada partido
   sort(this->listaPartidos.begin(), this->listaPartidos.end(),
-       [](const Partido& p1, const Partido& p2) {
-         return p1.comparaPartidosPorCandidatosMaisVotados(p2);
+       [](Partido* p1, Partido* p2) {
+         return p1->comparaPartidosPorCandidatosMaisVotados(*p2);
        });
 
   cout << endl;
   cout << "Primeiro e último colocados de cada partido:" << endl;
   int index = 1;
   for (auto& partido : this->listaPartidos) {
-    if (partido.getCandidatos().size() <= 1)
+    if (partido->getCandidatos().size() <= 1)
       continue;
     cout << index << " - ";
 
     // Faz uma cópia dos candidatos do partido e ordena (e dessa vez considera o numeroPartido, flag = true)
-    vector<Candidato> candidatosCopy;
-    for (auto& candidato : partido.getCandidatos())
-      candidatosCopy.push_back(*candidato);
+    vector<Candidato*> candidatosCopy;
+    for (auto& candidato : partido->getCandidatos())
+      candidatosCopy.push_back(candidato);
 
     // Ordena os candidatos do partido
     sort(candidatosCopy.begin(), candidatosCopy.end(),
-         [](const Candidato& c1, const Candidato& c2) {
-           return c1.compare(c2, true);
+         [](Candidato* c1, Candidato* c2) {
+           return c1->compare(*c2, true);
          });
 
-    Candidato maisVotado = candidatosCopy[0];
-    Candidato menosVotado = candidatosCopy[candidatosCopy.size() - 1];
+    Candidato maisVotado = *(candidatosCopy[0]);
+    Candidato menosVotado = *(candidatosCopy[candidatosCopy.size() - 1]);
 
     string palavraVoto1 = (maisVotado.getQuantidadeVotos() <= 1) ? "voto" : "votos";
     string palavraVoto2 = (menosVotado.getQuantidadeVotos() <= 1) ? "voto" : "votos";
@@ -166,7 +166,7 @@ void EleicaoRelatorio::imprimePrimeiroUltimoPartido() {
     ossMaisVotado << fixed << maisVotado.getQuantidadeVotos();
     ossMenosVotado << fixed << menosVotado.getQuantidadeVotos();
 
-    string output = partido.getSigla() + " - " + (partido.getNumero()) + ", " +
+    string output = partido->getSigla() + " - " + (partido->getNumero()) + ", " +
                     maisVotado.getNomeUrna() + " (" + (maisVotado.getNumeroCandidato()) +
                     ", " + ossMaisVotado.str() + " " + palavraVoto1 + ") / " +
                     menosVotado.getNomeUrna() + " (" + (menosVotado.getNumeroCandidato()) +
@@ -182,8 +182,8 @@ void EleicaoRelatorio::eleitosFaixaEtaria() {
   cout << "Eleitos, por faixa etária (na data da eleição):" << endl;
   vector<int> faixasEtarias = {0, 0, 0, 0, 0};
   for (auto& candidato : this->listaCandidatos) {
-    if (candidato.getEleito()) {
-      int idade = candidato.getIdade(this->eleicao.getDataEleicao());
+    if (candidato->getEleito()) {
+      int idade = candidato->getIdade(this->eleicao.getDataEleicao());
 
       if (idade < 30) {
         faixasEtarias[0]++;
@@ -231,8 +231,8 @@ void EleicaoRelatorio::imprimeRelatorioGenero() {
   int qtdMasculino = 0;
   int qtdFeminino = 0;
   for (auto& candidato : this->listaCandidatos) {
-    if (candidato.getEleito()) {
-      if (candidato.getGenero() == Genero::MASCULINO)
+    if (candidato->getEleito()) {
+      if (candidato->getGenero() == Genero::MASCULINO)
         qtdMasculino++;
       else
         qtdFeminino++;
@@ -255,9 +255,9 @@ void EleicaoRelatorio::imprimeRelatorioGeral() {
 
   int totalVotosValidos = 0, totalVotosNominais = 0, totalVotosLegenda = 0;
   for (auto& partido : this->listaPartidos) {
-    totalVotosValidos += partido.getQtdVotos();
-    totalVotosNominais += partido.getVotosNominais();
-    totalVotosLegenda += partido.getVotosLegenda();
+    totalVotosValidos += partido->getQtdVotos();
+    totalVotosNominais += partido->getVotosNominais();
+    totalVotosLegenda += partido->getVotosLegenda();
   }
 
   cout << "Total de votos válidos:    "

@@ -19,10 +19,10 @@ class EleicaoRelatorio {
   Eleicao& eleicao;
 
   // Lista de candidatos da eleição, para o proposito de ordenacao e manipulacao dos dados
-  vector<Candidato> listaCandidatos = {};
+  vector<Candidato*> listaCandidatos = {};
 
   // Lista de partidos da eleição, para o proposito de ordenacao e manipulacao dos dados
-  vector<Partido> listaPartidos = {};
+  vector<Partido*> listaPartidos = {};
 
  public:
   /**
