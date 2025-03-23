@@ -83,19 +83,19 @@ bool Candidato::compare(const Candidato& c2, const bool& compararPorNumeroPartid
   // Comparar votos de forma descrescente
   int comparaVotos = this->quantidadeVotos - c2.quantidadeVotos;
   if (comparaVotos != 0)
-    return comparaVotos > 0;  // Retorna verdadeiro se c1 tiver menos votos que c2
+    return comparaVotos > 0;
 
   // Caso de empate no número de votos, comparar pelo número do partido
   if (compararPorNumeroPartido) {
     int comparaNumeroPartidario = this->getPartido()->getNumero().compare(c2.getPartido()->getNumero());
     if (comparaNumeroPartidario != 0)
-      return comparaNumeroPartidario > 0;  // Retorna verdadeiro se c1 tiver número de partido lexicograficamente menor
+      return comparaNumeroPartidario > 0;
   }
 
   // Caso empate, comparar pela data de nascimento
   if (this->getDataNascimento().tm_year != c2.getDataNascimento().tm_year)
-    return this->getDataNascimento().tm_year < c2.getDataNascimento().tm_year;  // Comparar anos de nascimento
+    return this->getDataNascimento().tm_year < c2.getDataNascimento().tm_year;
   if (this->getDataNascimento().tm_mon != c2.getDataNascimento().tm_mon)
-    return this->getDataNascimento().tm_mon < c2.getDataNascimento().tm_mon;  // Comparar meses de nascimento
-  return this->getDataNascimento().tm_mday < c2.getDataNascimento().tm_mday;  // Comparar dias de nascimento
+    return this->getDataNascimento().tm_mon < c2.getDataNascimento().tm_mon;
+  return this->getDataNascimento().tm_mday < c2.getDataNascimento().tm_mday;
 }

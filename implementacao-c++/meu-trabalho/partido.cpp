@@ -76,16 +76,17 @@ bool Partido::comparaPartidosPorCandidatosMaisVotados(const Partido& p2) const {
     }
   }
 
-  // Comparar votos dos candidatos mais votados
-  return votosC1 > votosC2;  // Retorna true se p1 tem mais votos, false caso contrário
+  // Compara a quantidade de votos dos candidatos mais votados
+  return votosC1 > votosC2;
 }
 
 bool Partido::compare(const Partido& p2) const {
-  // Comparar votos de forma crescente
+  // Comparar votos de forma descrescente
   int comparaVotos = this->getQtdVotos() - p2.getQtdVotos();
   if (comparaVotos != 0)
     return comparaVotos > 0;
 
+  // Caso de empate no número de votos, comparar pelo número do partido
   return this->getNumero().compare(p2.getNumero()) < 0;
 }
 

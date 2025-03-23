@@ -3,23 +3,22 @@
 #include <iomanip>
 
 EleicaoRelatorio::EleicaoRelatorio(Eleicao& eleicao) : eleicao(eleicao) {
-  // Cria um vetor de partidos a partir do map de partidos
+  // Cria um vetor de partidos e candidatos a partir do map de partidos
   for (auto& par : eleicao.getPartidos())
     this->listaPartidos.push_back(*par.second);
   for (auto& par : eleicao.getCandidatos())
     this->listaCandidatos.push_back(*par.second);
 
-  // Faz o sort de candidatos
+  // Faz sort de candidatos e partidos das novas listas
   sort(this->listaCandidatos.begin(), this->listaCandidatos.end(), [](const Candidato& c1, const Candidato& c2) {
     return c1.compare(c2, false);
   });
 
-  // Faz o sort de partidos
   sort(this->listaPartidos.begin(), this->listaPartidos.end(), [](const Partido& p1, const Partido& p2) {
     return p1.compare(p2);
   });
 
-  // Configuracao do locale
+  // Configuracao do locale para formatacao dos valores
   locale loc("pt_BR.UTF-8");
   cout.imbue(loc);
 }
@@ -129,7 +128,7 @@ void EleicaoRelatorio::imprimeVotacaoPartidos() {
 }
 
 void EleicaoRelatorio::imprimePrimeiroUltimoPartido() {
-  // Realiza reordenação para imprimir o primeiro e o último partido
+  // Realiza reordenação especial para imprimir o primeiro e o último mais votado de cada partido
   sort(this->listaPartidos.begin(), this->listaPartidos.end(),
        [](const Partido& p1, const Partido& p2) {
          return p1.comparaPartidosPorCandidatosMaisVotados(p2);
@@ -143,7 +142,7 @@ void EleicaoRelatorio::imprimePrimeiroUltimoPartido() {
       continue;
     cout << index << " - ";
 
-    // Faz uma cópia dos candidatos do partido
+    // Faz uma cópia dos candidatos do partido e ordena (e dessa vez considera o numeroPartido, flag = true)
     vector<Candidato> candidatosCopy;
     for (auto& candidato : partido.getCandidatos())
       candidatosCopy.push_back(*candidato);

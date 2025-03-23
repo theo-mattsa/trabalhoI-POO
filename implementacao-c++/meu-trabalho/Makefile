@@ -16,7 +16,7 @@ FONTES = $(wildcard *.cpp)
 # define lista dos arquivos-objeto usando nomes da lista de arquivos-fonte
 OBJETOS = $(FONTES:.cpp=.o)
 # nome do arquivo executável
-EXECUTAVEL = vereadores
+EXECUTAVEL = deputados
 ############ alvos
 #
 # use @ antes de todos os comandos, pois é necessário no script de teste

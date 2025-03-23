@@ -7,10 +7,30 @@
 
 #include "iso8859_1_to_utf8.hpp"
 
+enum GeneroNumber {
+  MASCULINO = 2,
+  FEMININO = 4,
+};
+
+enum Cargo {
+  VEREADOR = 13,
+};
+
+enum SituacaoCandidato {
+  SKIP_COD = -1,
+  ELEITO_COD_1 = 2,
+  ELEITO_COD_2 = 3
+};
+
+enum Federacao {
+  NAO_PARTICIPA = -1,
+};
+
 Eleicao::Eleicao(int codigoCidade, const string& arquivoCandidatos, const string& arquivoVotacao, const string& dataEleicao) {
   this->codigoCidade = codigoCidade;
   this->arquivoCandidatos = arquivoCandidatos;
   this->arquivoVotacao = arquivoVotacao;
+
   // Converte a string de data para o formato tm
   strptime(dataEleicao.c_str(), "%d/%m/%Y", &this->dataEleicao);
 }
@@ -21,7 +41,7 @@ void Eleicao::processaCandidatos() {
     cerr << "Erro ao abrir o arquivo de candidatos" << endl;
     return;
   }
-  // Cria um map de índices das colunas
+  // Cria um map para os indices do cabecalho
   map<string, int> indiceCabecalhos = {};
 
   string linha;
@@ -31,13 +51,14 @@ void Eleicao::processaCandidatos() {
     string linhaUtf8 = iso_8859_1_to_utf8(linha);
     linhaUtf8.erase(remove(linhaUtf8.begin(), linhaUtf8.end(), '\"'), linhaUtf8.end());
 
-    // Transforma em um vetor de strings
+    // Transforma em um vetor de strings (split por ';')
     vector<string> valores;
     stringstream ss(linhaUtf8);
     string campo;
     while (getline(ss, campo, ';'))
       valores.push_back(campo);
 
+    // Se for o cabecalho, preenche o map de indices
     if (isCabecalho) {
       // Preenche o map de índices das colunas (size_t para remover warning)
       for (size_t i = 0; i < valores.size(); i++)
@@ -50,11 +71,10 @@ void Eleicao::processaCandidatos() {
     string numeroPartido = valores[indiceCabecalhos["NR_PARTIDO"]];
     string nomePartido = valores[indiceCabecalhos["SG_PARTIDO"]];
 
+    // Cria um partido ou obtem o partido ja existente
     Partido* p = nullptr;
-
-    // Verifica se o partido ja foi inserido no map
     if (this->partidos.find(numeroPartido) == this->partidos.end()) {
-      p = new Partido;
+      p = new Partido;  // Realiza a alocação dinâmica
       p->setNumero(numeroPartido);
       p->setSigla(nomePartido);
       this->partidos[numeroPartido] = p;
@@ -62,9 +82,10 @@ void Eleicao::processaCandidatos() {
       p = this->partidos[numeroPartido];
     }
 
+    // Verifica se o candidato é da cidade e do cargo de vereador
     int codigoCidadeArquivo = stoi(valores[indiceCabecalhos["SG_UE"]]);
     int codigoCargo = stoi(valores[indiceCabecalhos["CD_CARGO"]]);
-    if (codigoCidadeArquivo != this->codigoCidade || codigoCargo != 13)
+    if (codigoCidadeArquivo != this->codigoCidade || codigoCargo != Cargo::VEREADOR)
       continue;
 
     // Informacoes do candidato
@@ -76,9 +97,9 @@ void Eleicao::processaCandidatos() {
     bool candidatoEleito = false;
 
     int codigoCandidatoEleito = stoi(valores[indiceCabecalhos["CD_SIT_TOT_TURNO"]]);
-    if (codigoCandidatoEleito == -1) {
+    if (codigoCandidatoEleito == SituacaoCandidato::SKIP_COD) {
       continue;
-    } else if (codigoCandidatoEleito == 2 || codigoCandidatoEleito == 3) {
+    } else if (codigoCandidatoEleito == SituacaoCandidato::ELEITO_COD_1 || codigoCandidatoEleito == SituacaoCandidato::ELEITO_COD_2) {
       candidatoEleito = true;
       this->quantidadeEleitos++;
     }
@@ -89,12 +110,12 @@ void Eleicao::processaCandidatos() {
     candidato->setNumeroCandidato(numeroCandidato);
     candidato->setNomeUrna(nomeCandidatoUrna);
     candidato->setPartido(*p);
-    candidato->setParticipaFederacao(numFederacao != -1);
+    candidato->setParticipaFederacao(numFederacao != Federacao::NAO_PARTICIPA);
     candidato->setDataNascimento(dataNascimento);
 
-    if (genero == 2) {
+    if (genero == MASCULINO) {
       candidato->setGenero(Genero::MASCULINO);
-    } else if (genero == 4) {
+    } else if (genero == FEMININO) {
       candidato->setGenero(Genero::FEMININO);
     }
 
@@ -111,7 +132,7 @@ void Eleicao::processaVotacao() {
     cerr << "Erro ao abrir o arquivo de candidatos" << endl;
     return;
   }
-  // Cria um map de índices das colunas
+  // Cria um map para os indices do cabecalho
   map<string, int> indiceCabecalhos = {};
 
   string linha;
@@ -138,12 +159,13 @@ void Eleicao::processaVotacao() {
 
     int codigoCidadeArquivo = stoi(valores[indiceCabecalhos["CD_MUNICIPIO"]]);
     int codigoCargo = stoi(valores[indiceCabecalhos["CD_CARGO"]]);
-    if (codigoCidadeArquivo != this->codigoCidade || codigoCargo != 13)
+    if (codigoCidadeArquivo != this->codigoCidade || codigoCargo != Cargo::VEREADOR)
       continue;
 
     int qtdVotos = stoi(valores[indiceCabecalhos["QT_VOTOS"]]);
     int numCandidato = stoi(valores[indiceCabecalhos["NR_VOTAVEL"]]);
 
+    // Intervalo do numero de um candidato
     if (numCandidato >= 10000 && numCandidato <= 99999) {
       string numeroCandidato = to_string(numCandidato);
       if (this->candidatos.find(numeroCandidato) != this->candidatos.end()) {
@@ -152,8 +174,9 @@ void Eleicao::processaVotacao() {
         Partido* p = candidato->getPartido();
         p->incrementaVotosNominais(qtdVotos);
       }
-    } else if (numCandidato >= 10 && numCandidato <= 99 && !(numCandidato >= 95 && numCandidato <= 98)) {
-      // Nao eh candidato, eh partido
+    }
+    // Nesse caso, o número do candidato é o número do partido
+    else if (numCandidato >= 10 && numCandidato <= 99 && !(numCandidato >= 95 && numCandidato <= 98)) {
       if (this->partidos.find(to_string(numCandidato)) != this->partidos.end()) {
         Partido* p = this->partidos[to_string(numCandidato)];
         p->incrementaVotosLegenda(qtdVotos);
