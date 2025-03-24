@@ -8,5 +8,5 @@ Este projeto realiza a análise de dados eleitorais, processando informações d
 Nesta implementação em C++, foi necessária a utilização de ponteiros (e alocação dinâmica) para auxiliar na atualização dos dados, otimização de memória e na implementação de forward declarations.
 
 ## Bugs Conhecidos
-- O processamento segue uma ordem específica: processaCandidatos() deve ser executado antes de processaVotacao(). Caso essa ordem não seja respeitada, o programa apresentará erros.
+- O processamento segue uma ordem específica: processaCandidatos() deve ser executado antes de processaVotacao(). Caso essa ordem não seja respeitada, o programa apresentará erros. Inclusive, é lançada uma exceção caso não seja possível abrir alguns dos arquivos.
 - A classe de eleição faz referência aos ponteiros de candidatos e partidos. Esses objetos são desalocados no destruidor da classe Eleicao. Portanto, não pode ocorrer a liberação de memória de candidatos e partidos fora desse contexto.

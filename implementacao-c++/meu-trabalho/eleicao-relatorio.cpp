@@ -1,6 +1,8 @@
 #include "eleicao-relatorio.hpp"
 
 #include <iomanip>
+#include <locale>
+#include <sstream>
 
 EleicaoRelatorio::EleicaoRelatorio(Eleicao& eleicao) : eleicao(eleicao) {
   // Cria um vetor de partidos e candidatos a partir do map de partidos
@@ -17,16 +19,12 @@ EleicaoRelatorio::EleicaoRelatorio(Eleicao& eleicao) : eleicao(eleicao) {
   sort(this->listaPartidos.begin(), this->listaPartidos.end(), [](Partido* p1, Partido* p2) {
     return p1->compare(*p2);
   });
-
-  // Configuracao do locale para formatacao dos valores
-  locale loc("pt_BR.UTF-8");
-  cout.imbue(loc);
 }
 
-static void imprimeCandidato(Candidato& c) {
+static void imprimeCandidato(Candidato& c, locale loc) {
   if (c.getPartido() != nullptr) {
     ostringstream oss;
-    oss.imbue(locale("pt_BR.UTF-8"));
+    oss.imbue(loc);
     oss << fixed << c.getQuantidadeVotos();
     string qtdVotos = oss.str();
     string output = "";
@@ -38,12 +36,12 @@ static void imprimeCandidato(Candidato& c) {
   }
 }
 
-static void imprimePartido(Partido& p) {
+static void imprimePartido(Partido& p, locale loc) {
   ostringstream ossTotal, ossNominais, ossLegenda, ossEleitos;
-  ossTotal.imbue(locale("pt_BR.UTF-8"));
-  ossNominais.imbue(locale("pt_BR.UTF-8"));
-  ossLegenda.imbue(locale("pt_BR.UTF-8"));
-  ossEleitos.imbue(locale("pt_BR.UTF-8"));
+  ossTotal.imbue(loc);
+  ossNominais.imbue(loc);
+  ossLegenda.imbue(loc);
+  ossEleitos.imbue(loc);
 
   ossTotal << fixed << p.getQtdVotos();
   ossNominais << fixed << p.getVotosNominais();
@@ -74,7 +72,7 @@ void EleicaoRelatorio::imprimeCandidatosEleitos() {
   for (auto& candidato : this->listaCandidatos) {
     if (candidato->getEleito()) {
       cout << index << " - ";
-      imprimeCandidato(*candidato);
+      imprimeCandidato(*candidato, this->loc);
       index++;
     }
   }
@@ -85,7 +83,7 @@ void EleicaoRelatorio::imprimeCandidatosMaisVotados() {
   cout << "Candidatos mais votados (em ordem decrescente de votação e respeitando número de vagas):" << endl;
   for (int i = 0; i < eleicao.getQuantidadeEleitos(); i++) {
     cout << i + 1 << " - ";
-    imprimeCandidato(*(this->listaCandidatos[i]));
+    imprimeCandidato(*(this->listaCandidatos[i]), this->loc);
   }
 }
 
@@ -96,7 +94,7 @@ void EleicaoRelatorio::imprimeCandidatosEleitosCasoMajoritario() {
   for (int i = 0; i < eleicao.getQuantidadeEleitos(); i++) {
     if (!this->listaCandidatos[i]->getEleito()) {
       cout << i + 1 << " - ";
-      imprimeCandidato(*(this->listaCandidatos[i]));
+      imprimeCandidato(*(this->listaCandidatos[i]), this->loc);
     }
   }
 }
@@ -111,7 +109,7 @@ void EleicaoRelatorio::imprimeCandidatosEleitosCasoProporcional() {
     Candidato& c = *listaCandidatos[i];
     if (c.getEleito() && (int)i >= eleicao.getQuantidadeEleitos()) {
       cout << i + 1 << " - ";
-      imprimeCandidato(c);
+      imprimeCandidato(c, this->loc);
     }
   }
 }
@@ -122,7 +120,7 @@ void EleicaoRelatorio::imprimeVotacaoPartidos() {
   int index = 1;
   for (auto& partido : this->listaPartidos) {
     cout << index << " - ";
-    imprimePartido(*partido);
+    imprimePartido(*partido, this->loc);
     index++;
   }
 }
@@ -160,8 +158,8 @@ void EleicaoRelatorio::imprimePrimeiroUltimoPartido() {
     string palavraVoto2 = (menosVotado.getQuantidadeVotos() <= 1) ? "voto" : "votos";
 
     ostringstream ossMaisVotado, ossMenosVotado;
-    ossMaisVotado.imbue(locale("pt_BR.UTF-8"));
-    ossMenosVotado.imbue(locale("pt_BR.UTF-8"));
+    ossMaisVotado.imbue(this->loc);
+    ossMenosVotado.imbue(this->loc);
 
     ossMaisVotado << fixed << maisVotado.getQuantidadeVotos();
     ossMenosVotado << fixed << menosVotado.getQuantidadeVotos();
@@ -180,7 +178,11 @@ void EleicaoRelatorio::imprimePrimeiroUltimoPartido() {
 void EleicaoRelatorio::eleitosFaixaEtaria() {
   cout << endl;
   cout << "Eleitos, por faixa etária (na data da eleição):" << endl;
+
   vector<int> faixasEtarias = {0, 0, 0, 0, 0};
+  ostringstream oss;
+  oss.imbue(this->loc);
+
   for (auto& candidato : this->listaCandidatos) {
     if (candidato->getEleito()) {
       int idade = candidato->getIdade(this->eleicao.getDataEleicao());
@@ -199,37 +201,57 @@ void EleicaoRelatorio::eleitosFaixaEtaria() {
     }
   }
 
-  cout << "      Idade < 30: " << faixasEtarias[0] << " ("
-       << fixed << setprecision(2)
-       << (double)faixasEtarias[0] / eleicao.getQuantidadeEleitos() * 100
-       << "%)" << endl;
+  oss << "      Idade < 30: " << faixasEtarias[0] << " ("
+      << fixed << setprecision(2)
+      << (double)faixasEtarias[0] / eleicao.getQuantidadeEleitos() * 100
+      << "%)" << endl;
+  string resultado = oss.str();
+  cout << resultado;
 
-  cout << "30 <= Idade < 40: " << faixasEtarias[1] << " ("
-       << fixed << setprecision(2)
-       << (double)faixasEtarias[1] / eleicao.getQuantidadeEleitos() * 100
-       << "%)" << endl;
+  oss.str("");
 
-  cout << "40 <= Idade < 50: " << faixasEtarias[2] << " ("
-       << fixed << setprecision(2)
-       << (double)faixasEtarias[2] / eleicao.getQuantidadeEleitos() * 100
-       << "%)" << endl;
+  oss << "30 <= Idade < 40: " << faixasEtarias[1] << " ("
+      << fixed << setprecision(2)
+      << (double)faixasEtarias[1] / eleicao.getQuantidadeEleitos() * 100
+      << "%)" << endl;
+  resultado = oss.str();
+  cout << resultado;
 
-  cout << "50 <= Idade < 60: " << faixasEtarias[3] << " ("
-       << fixed << setprecision(2)
-       << (double)faixasEtarias[3] / eleicao.getQuantidadeEleitos() * 100
-       << "%)" << endl;
+  oss.str("");
 
-  cout << "60 <= Idade     : " << faixasEtarias[4] << " ("
-       << fixed << setprecision(2)
-       << (double)faixasEtarias[4] / eleicao.getQuantidadeEleitos() * 100
-       << "%)" << endl;
+  oss << "40 <= Idade < 50: " << faixasEtarias[2] << " ("
+      << fixed << setprecision(2)
+      << (double)faixasEtarias[2] / eleicao.getQuantidadeEleitos() * 100
+      << "%)" << endl;
+  resultado = oss.str();
+  cout << resultado;
+
+  oss.str("");
+
+  oss << "50 <= Idade < 60: " << faixasEtarias[3] << " ("
+      << fixed << setprecision(2)
+      << (double)faixasEtarias[3] / eleicao.getQuantidadeEleitos() * 100
+      << "%)" << endl;
+  resultado = oss.str();
+  cout << resultado;
+
+  oss.str("");
+
+  oss << "60 <= Idade     : " << faixasEtarias[4] << " ("
+      << fixed << setprecision(2)
+      << (double)faixasEtarias[4] / eleicao.getQuantidadeEleitos() * 100
+      << "%)" << endl;
+  resultado = oss.str();
+  cout << resultado;
 }
 
 void EleicaoRelatorio::imprimeRelatorioGenero() {
   cout << endl;
   cout << "Eleitos, por gênero:" << endl;
+
   int qtdMasculino = 0;
   int qtdFeminino = 0;
+
   for (auto& candidato : this->listaCandidatos) {
     if (candidato->getEleito()) {
       if (candidato->getGenero() == Genero::MASCULINO)
@@ -239,15 +261,23 @@ void EleicaoRelatorio::imprimeRelatorioGenero() {
     }
   }
 
-  cout << "Feminino:  " << qtdFeminino << " ("
-       << fixed << setprecision(2)
-       << (double)qtdFeminino / eleicao.getQuantidadeEleitos() * 100
-       << "%)" << endl;
+  ostringstream oss;
+  oss.imbue(this->loc);
 
-  cout << "Masculino: " << qtdMasculino << " ("
-       << fixed << setprecision(2)
-       << (double)qtdMasculino / eleicao.getQuantidadeEleitos() * 100
-       << "%)" << endl;
+  oss << "Feminino:  "
+      << qtdFeminino << " ("
+      << fixed << setprecision(2)
+      << (double)qtdFeminino / eleicao.getQuantidadeEleitos() * 100
+      << "%)";
+  cout << oss.str() << endl;
+  oss.str("");
+
+  oss << "Masculino: "
+      << qtdMasculino << " ("
+      << fixed << setprecision(2)
+      << (double)qtdMasculino / eleicao.getQuantidadeEleitos() * 100
+      << "%)";
+  cout << oss.str() << endl;
 }
 
 void EleicaoRelatorio::imprimeRelatorioGeral() {
@@ -260,21 +290,31 @@ void EleicaoRelatorio::imprimeRelatorioGeral() {
     totalVotosLegenda += partido->getVotosLegenda();
   }
 
-  cout << "Total de votos válidos:    "
-       << fixed << setprecision(0)
-       << totalVotosValidos << endl;
+  ostringstream oss;
+  oss.imbue(this->loc);
 
-  cout << "Total de votos nominais:   "
-       << fixed << setprecision(0)
-       << totalVotosNominais << " ("
-       << fixed << setprecision(2)
-       << ((double)totalVotosNominais / totalVotosValidos) * 100.0 << "%)" << endl;
+  oss << "Total de votos válidos:    "
+      << fixed << setprecision(0)
+      << totalVotosValidos;
+  cout << oss.str() << endl;
+  oss.str("");
 
-  cout << "Total de votos de legenda: "
-       << fixed << setprecision(0)
-       << totalVotosLegenda << " ("
-       << fixed << setprecision(2)
-       << ((double)totalVotosLegenda / totalVotosValidos) * 100.0 << "%)" << endl;
+  oss << "Total de votos nominais:   "
+      << fixed << setprecision(0)
+      << totalVotosNominais << " ("
+      << fixed << setprecision(2)
+      << ((double)totalVotosNominais / totalVotosValidos) * 100.0
+      << "%)";
+  cout << oss.str() << endl;
+  oss.str("");
+
+  oss << "Total de votos de legenda: "
+      << fixed << setprecision(0)
+      << totalVotosLegenda << " ("
+      << fixed << setprecision(2)
+      << ((double)totalVotosLegenda / totalVotosValidos) * 100.0
+      << "%)";
+  cout << oss.str() << endl;
   cout << endl;
 }
 

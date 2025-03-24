@@ -37,10 +37,11 @@ Eleicao::Eleicao(int codigoCidade, const string& arquivoCandidatos, const string
 
 void Eleicao::processaCandidatos() {
   ifstream arquivo(this->arquivoCandidatos, ios::in);
-  if (!arquivo.is_open()) {
-    cerr << "Erro ao abrir o arquivo de candidatos" << endl;
-    return;
-  }
+
+  // Lança exceção caso não consiga abrir o arquivo
+  if (!arquivo.is_open())
+    throw runtime_error("Erro ao abrir o arquivo de candidatos");
+
   // Cria um map para os indices do cabecalho
   map<string, int> indiceCabecalhos = {};
 
@@ -128,10 +129,10 @@ void Eleicao::processaCandidatos() {
 
 void Eleicao::processaVotacao() {
   ifstream arquivo(this->arquivoVotacao, ios::in);
-  if (!arquivo.is_open()) {
-    cerr << "Erro ao abrir o arquivo de candidatos" << endl;
-    return;
-  }
+
+  if (!arquivo.is_open())
+    throw runtime_error("Erro ao abrir o arquivo de candidatos");
+
   // Cria um map para os indices do cabecalho
   map<string, int> indiceCabecalhos = {};
 

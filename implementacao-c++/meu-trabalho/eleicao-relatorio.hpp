@@ -24,6 +24,9 @@ class EleicaoRelatorio {
   // Lista de partidos da eleição, para o proposito de ordenacao e manipulacao dos dados
   vector<Partido*> listaPartidos = {};
 
+  // Formatação dos números para o padrão brasileiro
+  locale loc = locale("pt_BR.UTF-8");
+
  public:
   /**
    * @brief Construtor que inicializa os dados com base em uma eleicao
